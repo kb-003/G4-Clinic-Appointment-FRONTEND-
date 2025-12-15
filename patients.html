@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Clinic Appointer – Patients</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="patients-page">
+    <!-- NAVBAR -->
+    <header class="navbar">
+      <div class="logo">Clinic Appointer</div>
+
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="patients.html" class="active">Patients</a>
+        <a href="doctors.html">Doctors</a>
+        <a href="appointments.html">Appointments</a>
+      </nav>
+    </header>
+
+    <!-- HEADER -->
+    <section class="page-header">
+      <h1>Patient Management</h1>
+      <p>Manage and organize patient records efficiently</p>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <main class="page-container">
+      <div class="card">
+        <div class="card-header">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Search patients..." />
+          </div>
+
+          <button class="btn-primary" id="openPatientModal">
+            <i class="fa-solid fa-plus"></i>
+            Add Patient
+          </button>
+        </div>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>NAME</th>
+              <th>BIRTH DATE</th>
+              <th>EMAIL</th>
+              <th>PHONE</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- ADD PATIENT MODAL -->
+      <div class="modal-overlay" id="patientModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h2>Add New Patient</h2>
+            <i class="fa-solid fa-xmark close-modal" id="closePatientModal"></i>
+          </div>
+
+          <form class="modal-form">
+            <div class="form-group">
+              <label>Name</label>
+              <input type="text" placeholder="James Dela Cruz" required />
+            </div>
+
+            <div class="form-group">
+              <label>Birth Date</label>
+              <input type="date" required />
+            </div>
+
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" placeholder="james.delacruz@example.com" />
+            </div>
+
+            <div class="form-group">
+              <label>Phone</label>
+              <input type="text" placeholder="09171234567" />
+            </div>
+
+            <div class="modal-actions">
+              <button
+                type="button"
+                class="btn-secondary"
+                id="cancelPatientModal"
+              >
+                Cancel
+              </button>
+              <button type="submit" class="btn-primary">Add Patient</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Clinic Appointer – Appointments</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="appointments-page">
+    <!-- NAVBAR -->
+    <header class="navbar">
+      <div class="logo">Clinic Appointer</div>
+
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="patients.html">Patients</a>
+        <a href="doctors.html">Doctors</a>
+        <a href="appointments.html" class="active">Appointments</a>
+      </nav>
+    </header>
+
+    <!-- PAGE HEADER -->
+    <section class="page-header">
+      <h1>Appointments</h1>
+      <p>Schedule and manage patient appointments</p>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <main class="page-container">
+      <div class="card">
+        <!-- SEARCH + BUTTON -->
+        <div class="card-header">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Search appointments..." />
+          </div>
+
+          <button class="btn-primary" id="openAppointmentModal">
+            <i class="fa-solid fa-plus"></i>
+            New Appointment
+          </button>
+        </div>
+
+        <!-- APPOINTMENT LIST -->
+        <div class="appointment-list"></div>
+      </div>
+    </main>
+
+    <!-- APPOINTMENT MODAL -->
+    <div class="modal-overlay" id="appointmentModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>Schedule Appointment</h2>
+          <i
+            class="fa-solid fa-xmark close-modal"
+            id="closeAppointmentModal"
+          ></i>
+        </div>
+
+        <form class="modal-form">
+          <div class="form-group">
+            <label>Patient</label>
+            <select name="patient" required>
+              <option value="">Select Patient</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Doctor</label>
+            <select name="doctor" required>
+              <option value="">Select Doctor</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Start Time</label>
+            <input type="datetime-local" name="startAt" required />
+          </div>
+
+          <div class="form-group">
+            <label>End Time</label>
+            <input type="datetime-local" name="endAt" required />
+          </div>
+
+          <div class="form-group">
+            <label>Notes</label>
+            <textarea
+              name="notes"
+              placeholder="Reason for appointment"
+            ></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn-secondary"
+              id="cancelAppointmentModal"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary">Schedule</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

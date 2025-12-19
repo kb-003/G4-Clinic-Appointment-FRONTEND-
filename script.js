@@ -1,5 +1,7 @@
 const API_BASE = "https://se-clinic-appointment.onrender.com";
 
+let editingDoctorId = null;
+
 /* ACTIVE NAV */
 function highlightActiveNav() {
   const links = document.querySelectorAll(".nav-links a");
@@ -91,21 +93,23 @@ function setupPatientActions() {
       modal.classList.add("active");
 
       const form = modal.querySelector("form");
-      form.querySelector('input[type="text"]').value = patient.name;
-      form.querySelector('input[type="date"]').value =
-        patient.birthDate?.split("T")[0] || "";
-      form.querySelector('input[type="email"]').value = patient.email || "";
-      form.querySelector('input[type="text"]:not([type="date"])').value =
-        patient.phone || "";
 
+      modal.querySelector("h2").textContent = "Edit Patient";
+      form.querySelector('button[type="submit"]').textContent = "Update Patient";
+      form.querySelector('input[name="name"]').value = patient.name;
+      form.querySelector('input[name="birthDate"]').value =
+        patient.birthDate?.split("T")[0] || "";
+      form.querySelector('input[name="email"]').value = patient.email || "";
+      form.querySelector('input[name="phone"]').value = patient.phone || "";
+
+      form.onsubmit = null; // remove previous handler
       form.onsubmit = async (e) => {
         e.preventDefault();
-        const name = form.querySelector('input[type="text"]').value;
-        const birthDate = form.querySelector('input[type="date"]').value;
-        const email = form.querySelector('input[type="email"]').value;
-        const phone = form.querySelector(
-          'input[type="text"]:not([type="date"])'
-        ).value;
+
+        const name = form.querySelector('input[name="name"]').value;
+        const birthDate = form.querySelector('input[name="birthDate"]').value;
+        const email = form.querySelector('input[name="email"]').value;
+        const phone = form.querySelector('input[name="phone"]').value;
 
         try {
           const res = await fetch(`${API_BASE}/patients/${id}`, {
@@ -113,9 +117,12 @@ function setupPatientActions() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name, birthDate, email, phone }),
           });
+
           if (!res.ok) throw new Error("Failed to update patient");
+
           await loadPatients();
           modal.classList.remove("active");
+          form.reset();
         } catch (err) {
           console.error(err);
           alert("Failed to update patient");
@@ -146,15 +153,13 @@ function setupAddPatient() {
   const form = document.querySelector("#patientModal form");
   if (!form) return;
 
-  form.addEventListener("submit", async (e) => {
+  form.onsubmit = async (e) => {
     e.preventDefault();
 
-    const name = form.querySelector('input[type="text"]').value;
-    const birthDate = form.querySelector('input[type="date"]').value;
-    const email = form.querySelector('input[type="email"]').value;
-    const phone = form.querySelector(
-      'input[type="text"]:not([type="date"])'
-    ).value;
+    const name = form.querySelector('input[name="name"]').value;
+    const birthDate = form.querySelector('input[name="birthDate"]').value;
+    const email = form.querySelector('input[name="email"]').value;
+    const phone = form.querySelector('input[name="phone"]').value;
 
     try {
       const res = await fetch(`${API_BASE}/patients`, {
@@ -162,6 +167,7 @@ function setupAddPatient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, birthDate, email, phone }),
       });
+
       if (!res.ok) throw new Error("Failed to add patient");
 
       await loadPatients();
@@ -171,7 +177,7 @@ function setupAddPatient() {
       console.error(err);
       alert("Failed to add patient");
     }
-  });
+  };
 }
 
 /* DOCTORS */
@@ -209,34 +215,43 @@ async function loadDoctors() {
 }
 
 function setupDoctorActions() {
+  // Edit buttons
   document.querySelectorAll(".doctor-card .edit").forEach((btn) => {
     btn.onclick = async () => {
-      const id = btn.dataset.id;
+      const id = btn.dataset.id; // ✅ get the correct id
+      editingDoctorId = id;
+
       const doctorRes = await fetch(`${API_BASE}/doctors/${id}`);
       const doctor = await doctorRes.json();
 
       const modal = document.getElementById("doctorModal");
-      modal.classList.add("active");
+      modal.classList.add("active");  
 
       const form = modal.querySelector("form");
+      modal.querySelector("h2").textContent = "Edit Doctor";
+      form.querySelector('button[type="submit"]').textContent = "Update Doctor";
       form.querySelector('input[name="name"]').value = doctor.name;
-      form.querySelector('input[name="specialty"]').value =
-        doctor.specialty || "";
+      form.querySelector('input[name="specialty"]').value = doctor.specialty || "";
 
       form.onsubmit = async (e) => {
         e.preventDefault();
+
         const name = form.querySelector('input[name="name"]').value;
         const specialty = form.querySelector('input[name="specialty"]').value;
 
         try {
-          const res = await fetch(`${API_BASE}/doctors/${id}`, {
+          const res = await fetch(`${API_BASE}/doctors/${editingDoctorId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name, specialty }),
           });
+
           if (!res.ok) throw new Error("Failed to update doctor");
+
+          editingDoctorId = null; // reset
           await loadDoctors();
           modal.classList.remove("active");
+          form.reset();
         } catch (err) {
           console.error(err);
           alert("Failed to update doctor");
@@ -245,14 +260,14 @@ function setupDoctorActions() {
     };
   });
 
+  // Delete buttons
   document.querySelectorAll(".doctor-card .delete").forEach((btn) => {
     btn.onclick = async () => {
+      const id = btn.dataset.id; // ✅ get correct id
       if (!confirm("Are you sure you want to delete this doctor?")) return;
-      const id = btn.dataset.id;
+
       try {
-        const res = await fetch(`${API_BASE}/doctors/${id}`, {
-          method: "DELETE",
-        });
+        const res = await fetch(`${API_BASE}/doctors/${id}`, { method: "DELETE" });
         if (!res.ok) throw new Error("Failed to delete doctor");
         await loadDoctors();
       } catch (err) {
@@ -263,12 +278,15 @@ function setupDoctorActions() {
   });
 }
 
+
 function setupAddDoctor() {
   const form = document.querySelector("#doctorModal form");
   if (!form) return;
 
-  form.addEventListener("submit", async (e) => {
+  form.onsubmit = async (e) => {
     e.preventDefault();
+
+    if (editingDoctorId) return;
 
     const name = form.querySelector('input[name="name"]').value;
     const specialty = form.querySelector('input[name="specialty"]').value;
@@ -288,7 +306,7 @@ function setupAddDoctor() {
       console.error(err);
       alert("Failed to add doctor");
     }
-  });
+  };
 }
 
 /* APPOINTMENTS */
@@ -458,7 +476,8 @@ async function populateAppointmentDropdowns() {
 
   // Doctors
   const doctorRes = await fetch(`${API_BASE}/doctors`);
-  const doctors = await doctorRes.json();
+  const data = await doctorRes.json();
+  const doctors = Array.isArray(data) ? data : data.items || [];
   doctorSelect.innerHTML = '<option value="">Select Doctor</option>';
   doctors.forEach((d) => {
     const opt = document.createElement("option");
@@ -467,6 +486,7 @@ async function populateAppointmentDropdowns() {
     doctorSelect.appendChild(opt);
   });
 }
+
 
 /* INIT */
 document.addEventListener("DOMContentLoaded", () => {
@@ -491,6 +511,22 @@ document.addEventListener("DOMContentLoaded", () => {
     "closeAppointmentModal",
     "cancelAppointmentModal"
   );
+
+  const openPatientBtn = document.getElementById("openPatientModal");
+
+if (openPatientBtn) {
+  openPatientBtn.onclick = () => {
+    const modal = document.getElementById("patientModal");
+    const form = modal.querySelector("form");
+
+    modal.classList.add("active");
+    modal.querySelector("h2").textContent = "Add New Patient";
+    form.querySelector('button[type="submit"]').textContent = "Add Patient";
+
+    form.reset();
+  };
+}
+
 
   if (document.body.classList.contains("patients-page")) {
     loadPatients();
